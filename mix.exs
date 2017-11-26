@@ -9,7 +9,7 @@ defmodule ExMagery.Mixfile do
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       description: description(),
-      package: package(),,
+      package: package(),
       deps: deps(),
       name: "ExMagery",
       source_url: "https://github.com/mattschlobohm/ex_magery/"
@@ -28,7 +28,9 @@ defmodule ExMagery.Mixfile do
     [
       {:apex, "~> 1.1.0"},
       {:floki, "~> 0.19.0"},
-      {:poison, "~> 3.1.0"}
+      {:poison, "~> 3.1.0"},
+
+      {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
 
@@ -40,9 +42,9 @@ defmodule ExMagery.Mixfile do
   defp package() do
     [
       # This option is only needed when you don't want to use the OTP application name
-      name: "postgrex",
+      name: "ex_magery",
       # These are the default files included in the package
-      files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
+      files: ["lib", "priv", "mix.exs", "README*", "LICENSE*"],
       maintainers: ["Matt Schlobohm"],
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/mattschlobohm/ex_magery/"}

@@ -1,0 +1,2 @@
+defmodule ExMagery do
+end

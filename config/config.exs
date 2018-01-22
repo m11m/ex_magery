@@ -22,7 +22,7 @@ use Mix.Config
 #     config :logger, level: :info
 #
 
-#config :floki, :html_parser, Floki.HTMLParser.Html5ever
+# config :floki, :html_parser, Floki.HTMLParser.Html5ever
 
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment

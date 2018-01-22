@@ -6,8 +6,8 @@ defmodule ExMagery.Mixfile do
       app: :ex_magery,
       version: "0.1.0",
       elixir: "~> 1.5",
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
       description: description(),
       package: package(),
       deps: deps(),
@@ -26,14 +26,12 @@ defmodule ExMagery.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:apex, "~> 1.1.0"},
+      {:apex, "~> 1.2.0"},
       {:floki, "~> 0.19.0"},
       {:poison, "~> 3.1.0"},
-
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
-
 
   defp description() do
     "Backend for a Magery HTML template system"

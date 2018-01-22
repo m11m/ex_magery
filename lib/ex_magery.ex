@@ -31,8 +31,6 @@ defmodule ExMagery do
       |> Floki.filter_out(:comment)
       |> (fn ds -> if is_tuple(ds), do: [ds], else: ds end).()
 
-    #    |> Apex.ap
-
     trees_map =
       for tree <- trees_list, into: %{} do
         tagname = tagname(tree)
@@ -44,6 +42,7 @@ defmodule ExMagery do
       trees_map["app-main"]
       |> mgy_to_eex_variables(trees_map)
       |> Floki.raw_html()
+      |> unescape_eex_pieces
       |> EEx.compile_string()
 
     {:ok, %{"app-main" => quoted}}
@@ -60,16 +59,17 @@ defmodule ExMagery do
   end
 
 
-
-
-  defp transform_floki_boolean_attributes(html_tree) do
-    Floki.map(html_tree, fn {tag, attrs} ->
-      attrs = Enum.map(attrs, fn {k, v} -> if k == v, do: {k}, else: {k, v} end)
-      {tag, attrs} |> Apex.ap()
-    end)
+  defp unescape_eex_pieces(html) do
+    case String.split(html, ~r(&lt;%=|%&gt;)) do
+      [first, second, third] ->
+        first <> "<%=#{HtmlEntities.decode(second)}%>" <> third
+        |> unescape_eex_pieces
+      [first] ->
+        first
+    end
   end
 
-  def boolean_attribute?(attribute_name) do
+  defp boolean_attribute?(attribute_name) do
     Enum.member?(@boolean_attributes, attribute_name)
   end
 
@@ -79,7 +79,6 @@ defmodule ExMagery do
   end
 
   defp template_node?(node, trees_map) do
-    #    Apex.ap Map.fetch(trees_map, elem(node, 0))
     is_tuple(node) and Map.fetch(trees_map, elem(node, 0)) == :ok
   end
 
@@ -128,21 +127,18 @@ defmodule ExMagery do
   end
 
   defp mgy_variables_from_string(string) do
-    String.split(string, ~r({{|}}))
-    |> Enum.reduce([], fn s, acc ->
-      if length(acc) == 2 do
-        ["#{Enum.at(acc, 0)}<%=
-          if Keyword.has_key?(binding(), String.to_atom(\"#{Enum.at(acc, 1)}\")) do
-            Code.eval_string(\"#{Enum.at(acc, 1)}\", binding()) |> elem(0)
+    case String.split(string, ~r({{|}})) do
+      [first, second, third] ->
+        "#{first}<%=
+          if Keyword.has_key?(binding(), String.to_atom(\"#{String.trim(second)}\")) do
+            Code.eval_string(\"#{String.trim(second)}\", binding()) |> elem(0)
           else
             \"\"
           end
-          %>#{s}"]
-      else
-        acc ++ [s]
-      end
-    end)
-    |> List.first()
+          %>#{third}"
+      [first] ->
+        first
+    end
   end
 
   defp mgy_boolean_attribute_variables_from_string(k, k), do: k
@@ -173,7 +169,5 @@ defmodule ExMagery do
   defp data_to_kwls(data) do
     Map.to_list(data)
     |> Enum.map(fn {k, v} -> {String.to_atom(k), v} end)
-
-    #    |> IO.inspect
   end
 end

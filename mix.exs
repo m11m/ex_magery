@@ -28,6 +28,7 @@ defmodule ExMagery.Mixfile do
     [
       {:apex, "~> 1.2.0"},
       {:floki, "~> 0.19.0"},
+      {:html_entities, "~> 0.4.0"},
       {:poison, "~> 3.1.0"},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]

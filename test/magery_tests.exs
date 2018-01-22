@@ -2,8 +2,8 @@ defmodule MageryTests do
   @magery_tests_path "test/magery-tests/"
 
   defmacro __using__(_opts) do
-    #    |> Enum.filter(fn (path) -> String.contains?(path, "0610") end)
     File.ls!(File.cwd!() <> "/#{@magery_tests_path}components")
+#    |> Enum.filter(fn (path) -> String.contains?(path, "0109") end)
     |> Enum.sort()
     |> Enum.map(&MageryTests.build_test_ast/1)
   end

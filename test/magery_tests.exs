@@ -2,8 +2,8 @@ defmodule MageryTests do
   @magery_tests_path "test/magery-tests/"
 
   defmacro __using__(_opts) do
+    #    |> Enum.filter(fn path -> String.contains?(path, "0203") end)
     File.ls!(File.cwd!() <> "/#{@magery_tests_path}components")
-#    |> Enum.filter(fn (path) -> String.contains?(path, "0109") end)
     |> Enum.sort()
     |> Enum.map(&MageryTests.build_test_ast/1)
   end
@@ -15,12 +15,12 @@ defmodule MageryTests do
       test unquote(component_path) do
         error = File.read!(unquote("#{component_path}/error.txt"))
 
-        {_status, templates} = ExMagery.compile_templates(unquote("#{component_path}/template.html"))
+        {_status, templates} =
+          ExMagery.compile_templates(unquote("#{component_path}/template.html"))
 
         data = Poison.decode!(File.read!(unquote("#{component_path}/data.json")))
 
-        {status, render_result} =
-          ExMagery.render_to_string(data, templates)
+        {status, render_result} = ExMagery.render_to_string(data, templates)
 
         expected =
           unquote("#{component_path}/expected.html")
@@ -31,6 +31,7 @@ defmodule MageryTests do
         case status do
           :ok ->
             assert expected == Floki.parse(render_result) |> Floki.raw_html()
+
           :error ->
             assert error == render_result
         end
